@@ -1,0 +1,125 @@
+import { useEffect, useState } from 'react';
+
+const API_URL = 'http://localhost:5000/api';
+
+export default function App() {
+  const [dashboard, setDashboard] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [dashboardRes, studentsRes] = await Promise.all([
+          fetch(`${API_URL}/dashboard`),
+          fetch(`${API_URL}/students`)
+        ]);
+
+        const dashboardData = await dashboardRes.json();
+        const studentsData = await studentsRes.json();
+
+        setDashboard(dashboardData);
+        setStudents(studentsData);
+      } catch (error) {
+        console.error('Failed to load data', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return <div className="loading">Loading dashboard...</div>;
+  }
+
+  return (
+    <div className="app-shell">
+      <header className="topbar">
+        <div>
+          <p className="eyebrow">School operations</p>
+          <h1>Student Information System</h1>
+        </div>
+        <button className="primary-btn">Add Student</button>
+      </header>
+
+      <section className="kpi-grid">
+        <div className="kpi-card">
+          <span>Total Students</span>
+          <strong>{dashboard.overview.totalStudents.toLocaleString()}</strong>
+        </div>
+        <div className="kpi-card">
+          <span>Attendance</span>
+          <strong>{dashboard.overview.attendanceRate}%</strong>
+        </div>
+        <div className="kpi-card">
+          <span>Fee Collection</span>
+          <strong>{dashboard.overview.feeCollection}%</strong>
+        </div>
+        <div className="kpi-card">
+          <span>Average Marks</span>
+          <strong>{dashboard.overview.averageMarks}%</strong>
+        </div>
+      </section>
+
+      <section className="content-grid">
+        <div className="panel">
+          <h2>School Overview</h2>
+          <ul className="alert-list">
+            {dashboard.alerts.map((alert, index) => (
+              <li key={index}>{alert}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="panel">
+          <h2>Performance Trend</h2>
+          <div className="bars">
+            {dashboard.trends.map((item) => (
+              <div key={item.month} className="bar-group">
+                <div className="bar-stack">
+                  <span className="bar attendance" style={{ height: `${item.attendance * 2}px` }}></span>
+                  <span className="bar fees" style={{ height: `${item.fees * 2}px` }}></span>
+                </div>
+                <label>{item.month}</label>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="panel table-panel">
+        <h2>Student Directory</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Attendance</th>
+              <th>Average</th>
+              <th>Fee</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {students.map((student) => (
+              <tr key={student.id}>
+                <td>{student.name}</td>
+                <td>{student.grade}</td>
+                <td>{student.attendance}%</td>
+                <td>{student.average}%</td>
+                <td>{student.feeStatus}</td>
+                <td>
+                  <span className={`status ${student.tracker === 'Needs attention' ? 'warn' : 'good'}`}>
+                    {student.tracker}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+    </div>
+  );
+}
