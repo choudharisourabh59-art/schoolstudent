@@ -4,7 +4,7 @@ from typing import List, Dict, Optional
 from config import DB_PATH
 
 
-def get_connection():
+def get_connection() -> sqlite3.Connection:
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -12,6 +12,7 @@ def get_connection():
 
 def init_db():
     conn = get_connection()
+
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS students (
@@ -35,6 +36,52 @@ def init_db():
         )
         """
     )
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS attendance (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            attendance_date TEXT NOT NULL,
+            status TEXT NOT NULL,
+            remarks TEXT,
+            FOREIGN KEY(student_id) REFERENCES students(id)
+        )
+        """
+    )
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS fee_records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            total_fee REAL NOT NULL,
+            paid_amount REAL NOT NULL DEFAULT 0,
+            due_amount REAL NOT NULL,
+            status TEXT NOT NULL,
+            payment_date TEXT,
+            remarks TEXT,
+            FOREIGN KEY(student_id) REFERENCES students(id)
+        )
+        """
+    )
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS grades (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id INTEGER NOT NULL,
+            subject TEXT NOT NULL,
+            exam_name TEXT NOT NULL,
+            marks REAL NOT NULL,
+            max_marks REAL NOT NULL,
+            grade TEXT NOT NULL,
+            exam_date TEXT NOT NULL,
+            FOREIGN KEY(student_id) REFERENCES students(id)
+        )
+        """
+    )
+
     conn.commit()
     conn.close()
 
@@ -52,7 +99,7 @@ def get_all_students() -> List[Dict]:
     return [dict(r) for r in rows]
 
 
-def get_student_by_username(username: str) -> Optional[Dict]:
+def get_student_by_username(username: str) -> dict | None:
     conn = get_connection()
     row = conn.execute(
         "SELECT * FROM students WHERE LOWER(username) = LOWER(?)",
@@ -76,11 +123,11 @@ def username_exists(username: str) -> bool:
 
 def password_fingerprint_exists(password: str) -> bool:
     import hashlib
-    fingerprint = hashlib.sha256(password.strip().encode("utf-8")).hexdigest()
+    fp = hashlib.sha256(password.strip().encode("utf-8")).hexdigest()
     conn = get_connection()
     row = conn.execute(
         "SELECT 1 FROM students WHERE password_fingerprint = ?",
-        (fingerprint,),
+        (fp,),
     ).fetchone()
     conn.close()
     return row is not None
@@ -120,6 +167,90 @@ def insert_student(student_data: Dict) -> tuple[bool, str]:
         conn.close()
         return True, "Student added successfully."
     except sqlite3.IntegrityError:
-        return False, "Username or password duplicate detected. Please use unique values."
+        return False, "Duplicate username or password found. Use unique values."
     except Exception as e:
         return False, f"Database error: {str(e)}"
+
+
+def insert_attendance(student_id: int, attendance_date: str, status: str, remarks: str = ""):
+    conn = get_connection()
+    conn.execute(
+        """
+        INSERT INTO attendance (student_id, attendance_date, status, remarks)
+        VALUES (?, ?, ?, ?)
+        """,
+        (student_id, attendance_date, status, remarks),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_student_attendance(student_id: int):
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT attendance_date, status, remarks
+        FROM attendance
+        WHERE student_id = ?
+        ORDER BY attendance_date DESC
+        """,
+        (student_id,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def insert_fee_record(student_id: int, total_fee: float, paid_amount: float, due_amount: float, status: str, payment_date: str, remarks: str = ""):
+    conn = get_connection()
+    conn.execute(
+        """
+        INSERT INTO fee_records (student_id, total_fee, paid_amount, due_amount, status, payment_date, remarks)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (student_id, total_fee, paid_amount, due_amount, status, payment_date, remarks),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_fee_records(student_id: int):
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT total_fee, paid_amount, due_amount, status, payment_date, remarks
+        FROM fee_records
+        WHERE student_id = ?
+        ORDER BY payment_date DESC
+        """,
+        (student_id,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def insert_grade(student_id: int, subject: str, exam_name: str, marks: float, max_marks: float, grade: str, exam_date: str):
+    conn = get_connection()
+    conn.execute(
+        """
+        INSERT INTO grades (student_id, subject, exam_name, marks, max_marks, grade, exam_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (student_id, subject, exam_name, marks, max_marks, grade, exam_date),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_student_grades(student_id: int):
+    conn = get_connection()
+    rows = conn.execute(
+        """
+        SELECT subject, exam_name, marks, max_marks, grade, exam_date
+        FROM grades
+        WHERE student_id = ?
+        ORDER BY exam_date DESC
+        """,
+        (student_id,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
