@@ -3,29 +3,26 @@ CSS = """
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --bg: #eef2ff;
-    --page: #f5f7ff;
-    --panel: rgba(255,255,255,0.95);
-    --panel-strong: #ffffff;
-    --sidebar: #0c1220;
-    --sidebar-2: #101b2b;
+    --page-bg: #f3f6ff;
+    --panel: rgba(255,255,255,0.96);
+    --panel-soft: #f7f9ff;
     --primary: #2f5ef7;
     --primary-2: #4f46e5;
-    --primary-soft: #eaf0ff;
-    --secondary: #7c3aed;
-    --success: #10b981;
+    --primary-soft: #e9f0ff;
+    --success: #17b26a;
     --warning: #f59e0b;
     --danger: #ef4444;
-    --text: #0f172a;
-    --muted: #46556f;
-    --light-text: #e5ecff;
+    --text: #101828;
+    --muted: #5d6b82;
     --line: #e5e7eb;
-    --shadow: 0 18px 38px rgba(15, 23, 42, 0.10);
-    --soft-shadow: 0 12px 24px rgba(15, 23, 42, 0.06);
+    --sidebar: #0b1220;
+    --sidebar-2: #101b2a;
+    --nav-text: #eaf1ff;
+    --shadow: 0 18px 38px rgba(18, 24, 38, 0.09);
 }
 
 html, body, [data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #eef2ff 0%, #f5f7ff 100%);
+    background: linear-gradient(135deg, #edf2ff 0%, #f7f9ff 100%);
     font-family: "Inter", sans-serif;
     color: var(--text);
 }
@@ -35,18 +32,18 @@ html, body, [data-testid="stAppViewContainer"] {
 }
 
 .block-container {
-    padding-top: 1.2rem;
-    padding-bottom: 2.5rem;
-    max-width: 1500px;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+    max-width: 1550px;
 }
 
 div[data-testid="stSidebar"] {
     background: linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-2) 100%);
-    color: var(--light-text);
+    color: var(--nav-text);
 }
 
 [data-testid="stSidebar"] a {
-    color: var(--light-text) !important;
+    color: var(--nav-text) !important;
     border-radius: 12px;
 }
 
@@ -54,104 +51,96 @@ div[data-testid="stSidebar"] {
     background: linear-gradient(90deg, var(--primary) 0%, var(--primary-2) 100%);
     color: white !important;
     font-weight: 700;
-    border-radius: 12px;
-}
-
-[data-testid="stSidebar"] section[data-testid="stSidebarNav"] {
-    padding-top: 0.8rem;
-}
-
-div[data-testid="stForm"] {
-    background: transparent;
 }
 
 .stTextInput > div > div > input,
 .stTextArea > div > div > textarea,
 .stSelectbox > div > div > select,
 .stDateInput input {
-    border: 1px solid #d4d9e4 !important;
+    border: 1px solid #d5dae5 !important;
     border-radius: 12px !important;
-    background: white !important;
+    padding: 0.7rem 0.9rem !important;
     color: var(--text) !important;
-    padding: 0.7rem 0.85rem !important;
-    font-size: 0.96rem !important;
+    background: white !important;
 }
 
-.stTextInput label, .stTextArea label, .stDateInput label, .stSelectbox label {
+.stTextInput label, .stTextArea label, .stSelectbox label, .stDateInput label {
     color: var(--text) !important;
     font-weight: 700 !important;
-    margin-bottom: 6px !important;
 }
 
 .stButton > button {
-    color: white !important;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-2) 100%) !important;
     border: none !important;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-2) 100%) !important;
+    color: white !important;
     border-radius: 12px !important;
-    padding: 0.72rem 1.3rem !important;
+    padding: 0.75rem 1.35rem !important;
     font-weight: 700 !important;
     box-shadow: 0 12px 20px rgba(79,70,229,0.18);
 }
 
-.stButton > button:hover {
-    filter: brightness(1.04);
-}
-
 .top-banner {
-    background: linear-gradient(90deg, #2a52e3 0%, #4f46e5 100%);
-    border-radius: 20px;
+    background: linear-gradient(90deg, #2c53e5 0%, #4f46e5 100%);
     padding: 26px 28px;
-    margin-bottom: 24px;
-    box-shadow: 0 18px 30px rgba(79,70,229,0.18);
+    border-radius: 20px;
+    box-shadow: 0 18px 30px rgba(79,70,229,0.17);
+    margin-bottom: 22px;
     color: white;
 }
 
 .top-banner h1 {
     margin: 0;
-    color: white !important;
     font-size: 2.2rem;
     font-weight: 800;
     letter-spacing: -0.05em;
+    color: white !important;
 }
 
 .top-banner p {
-    margin: 8px 0 0 0;
-    color: rgba(255,255,255,0.92) !important;
+    margin: 10px 0 0 0;
     font-size: 0.96rem;
+    color: rgba(255,255,255,0.92) !important;
 }
 
 .metric-card {
-    background: rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.97);
     border: 1px solid var(--line);
     border-radius: 18px;
     padding: 18px 18px 14px 18px;
-    box-shadow: var(--soft-shadow);
     min-height: 146px;
-    color: var(--text);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
 }
 
 .metric-label {
     font-size: 0.72rem;
-    text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--muted);
+    text-transform: uppercase;
     font-weight: 700;
+    color: var(--muted);
 }
 
 .metric-value {
-    font-size: 2.05rem;
+    font-size: 2.1rem;
     font-weight: 800;
     margin-top: 12px;
     color: var(--text);
     letter-spacing: -0.05em;
 }
 
+.panel {
+    background: rgba(255,255,255,0.97);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.05);
+}
+
 .section-title {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 800;
+    letter-spacing: -0.03em;
     color: var(--text);
     margin-bottom: 10px;
-    letter-spacing: -0.03em;
 }
 
 .alert-success {
@@ -174,29 +163,8 @@ div[data-testid="stForm"] {
     margin: 10px 0;
 }
 
-.card-panel {
-    background: rgba(255,255,255,0.96);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 18px;
-    box-shadow: var(--soft-shadow);
-    color: var(--text);
-}
-
-.dataframe-container {
-    overflow: hidden;
-    border-radius: 16px;
-    border: 1px solid var(--line);
-}
-
-.stDataFrame {
-    color: var(--text) !important;
-    background: white;
-}
-
 .stDataFrame td, .stDataFrame th {
     color: var(--text) !important;
-    border-color: var(--line) !important;
 }
 
 .stTabs [role="tablist"] {
@@ -213,6 +181,31 @@ div[data-testid="stForm"] {
 .stTabs [role="tab"][aria-selected="true"] {
     background: linear-gradient(90deg, var(--primary) 0%, var(--primary-2) 100%);
     color: white !important;
+}
+
+.status-badge {
+    display: inline-block;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.status-paid {
+    background: rgba(16,185,129,0.12);
+    color: #047857;
+}
+
+.status-pending {
+    background: rgba(245,158,11,0.12);
+    color: #b45309;
+}
+
+.status-overdue {
+    background: rgba(239,68,68,0.12);
+    color: #b91c1c;
 }
 
 </style>
