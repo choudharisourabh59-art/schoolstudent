@@ -1,11 +1,11 @@
 import streamlit as st
 
-from auth import login_student
-from admin import admin_dashboard, show_error
-from student import student_dashboard
 from config import ADMIN_USERNAME, ADMIN_PASSWORD
-from database import init_db
 from styles import CSS
+from database import init_db
+from admin import admin_login_page, admin_dashboard
+from student import student_dashboard
+from auth import login_student
 
 
 st.set_page_config(page_title="School ERP", page_icon="🎓", layout="wide")
@@ -21,33 +21,23 @@ if "student" not in st.session_state:
     st.session_state.student = None
 
 
-def admin_login_page():
-    st.title("Admin Login")
-    with st.form("admin_form"):
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
-        submitted = st.form_submit_button("Login")
-
-    if submitted:
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            st.session_state.authenticated = True
-            st.session_state.user_type = "admin"
-            st.session_state.student = None
-            st.rerun()
-        else:
-            show_error("Invalid username or password.")
+def logout():
+    st.session_state.authenticated = False
+    st.session_state.user_type = None
+    st.session_state.student = None
+    st.rerun()
 
 
 def student_login_page():
     st.title("Student Login")
-    with st.form("student_form"):
+    with st.form("student_login_form"):
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
         submitted = st.form_submit_button("Login")
 
     if submitted:
         if not username.strip() or not password.strip():
-            show_error("Please enter a valid username and password.")
+            st.error("Please enter valid username and password.")
             return
 
         student = login_student(username, password)
@@ -57,14 +47,7 @@ def student_login_page():
             st.session_state.student = student
             st.rerun()
         else:
-            show_error("Invalid username or password.")
-
-
-def logout():
-    st.session_state.authenticated = False
-    st.session_state.user_type = None
-    st.session_state.student = None
-    st.rerun()
+            st.error("Invalid username or password.")
 
 
 if not st.session_state.authenticated:
@@ -72,7 +55,7 @@ if not st.session_state.authenticated:
         """
         <div class='top-banner'>
             <h1>School Student Information System</h1>
-            <p>Secure portal for student registration, login, and profile access.</p>
+            <p>Premium student management system with real records, secure authentication, attendance, fees, and analytics.</p>
         </div>
         """,
         unsafe_allow_html=True,
